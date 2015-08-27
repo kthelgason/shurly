@@ -5,17 +5,29 @@
             [clojure.java.io :as io]
             [ring.middleware.stacktrace :as trace]
             [ring.middleware.session :as session]
+            [ring.middleware.params :as params]
             [ring.middleware.session.cookie :as cookie]
             [ring.adapter.jetty :as jetty]
+            [shurly.data :as data]
             [environ.core :refer [env]]))
 
-(defroutes app
+(defroutes routes
   (GET "/" []
        {:status 200
         :headers {"Content-Type" "text/plain"}
         :body (slurp (io/resource "index.html"))})
+  (GET "/:slug" [slug]
+       {:status 301
+        :headers {"Location" (data/request-redirect! slug)}})
+  (POST "/shorten" [slug target]
+        (if (data/store-slug! slug target)
+          {:status 200}
+          {:status 404}))
   (ANY "*" []
        (route/not-found (slurp (io/resource "404.html")))))
+
+(def app (-> routes
+             params/wrap-params))
 
 (defn wrap-error-page [handler]
   (fn [req]
