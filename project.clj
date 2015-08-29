@@ -5,6 +5,7 @@
                  [compojure "1.1.8"]
                  [ring/ring-jetty-adapter "1.2.2"]
                  [ring/ring-devel "1.2.2"]
+                 [com.datomic/datomic-free "0.9.5067" :exclusions [joda-time]]
                  [environ "0.5.0"]]
   :min-lein-version "2.0.0"
   :plugins [[environ/environ.lein "0.2.1"]
